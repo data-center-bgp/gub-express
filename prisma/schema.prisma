@@ -9,6 +9,62 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  username String
+  password String
+  name     String
+}
+
+model Kabkota {
+  id         Int         @id @default(autoincrement())
+  name       String
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  kecamatans Kecamatan[]
+}
+
+model Kecamatan {
+  id         Int         @id @default(autoincrement())
+  name       String
+  kabkotaId  Int
+  kabkota    Kabkota     @relation(fields: [kabkotaId], references: [id])
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  kelurahans Kelurahan[]
+}
+
+model Kelurahan {
+  id          Int       @id @default(autoincrement())
+  name        String
+  kecamatanId Int
+  kecamatan   Kecamatan @relation(fields: [kecamatanId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  tpses       TPS[]
+}
+
+model TPS {
+  id          Int       @id @default(autoincrement())
+  name        String
+  kelurahanId Int
+  kelurahan   Kelurahan @relation(fields: [kelurahanId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  votes       Vote[]
+}
+
+model Vote {
+  id        Int      @id @default(autoincrement())
+  tpsId     Int
+  tps       TPS      @relation(fields: [tpsId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  calon1    Int
+  calon2    Int
 }
