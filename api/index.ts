@@ -1,8 +1,17 @@
-const express = require("express");
+import express from "express";
+import cors from "cors";
+import createServer from "http";
+
+import { userRouter } from "./user/user.router";
+
 const app = express();
+const port = process.env.PORT || 3000;
 
-app.get("/", (req, res) => res.send("Express on Vercel"));
+app.use(express.json());
+app.use(cors());
 
-app.listen(3030, () => console.log("Server ready on port 3000."));
+app.use("/user", userRouter);
 
-module.exports = app;
+app.get("/", (req, res) => {
+    res.send("Hello World!");
+});
