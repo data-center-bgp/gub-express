@@ -11,12 +11,8 @@ const userService = new UserService(prismaService);
 const userGuard = new UserGuard();
 const userRouter = express.Router();
 
-interface CustomRequest extends Request {
-    id: number
-}
-
 const authenticationMiddleware = (
-    req: CustomRequest,
+    req: Request,
     res: Response,
     next: NextFunction,
 ) => {
@@ -38,7 +34,7 @@ const authenticationMiddleware = (
 }
 
 const authorizationMiddleware = (
-    req: CustomRequest,
+    req: Request,
     res: Response,
     next: NextFunction,
 ) => {
@@ -79,7 +75,7 @@ userRouter.post("/login", async (req: Request, res: Response) => {
 });
 
 // GET ALL USERS
-userRouter.get("/users", authenticationMiddleware, async (req: CustomRequest, res: Response) => {
+userRouter.get("/users", authenticationMiddleware, async (req: Request, res: Response) => {
     try {
         const response = await userService.getAllUser();
         res.status(response.code).json(response.response);
@@ -89,7 +85,7 @@ userRouter.get("/users", authenticationMiddleware, async (req: CustomRequest, re
 });
 
 // GET USER BY ID
-userRouter.get("/user/:id", authenticationMiddleware, authorizationMiddleware, async (req: CustomRequest, res: Response) => {
+userRouter.get("/user/:id", authenticationMiddleware, authorizationMiddleware, async (req: Request, res: Response) => {
     try {
         const response = await userService.getUserById(Number(req.params.id));
         res.status(response.code).json(response.response);
@@ -99,7 +95,7 @@ userRouter.get("/user/:id", authenticationMiddleware, authorizationMiddleware, a
 });
 
 // GET USER BY USERNAME
-userRouter.get("/user/:username", authenticationMiddleware, async (req: CustomRequest, res: Response) => {
+userRouter.get("/user/:username", authenticationMiddleware, async (req: Request, res: Response) => {
     try {
         const response = await userService.getUserByUsername(String(req.params.username));
         res.status(response.code).json(response.response);
@@ -109,7 +105,7 @@ userRouter.get("/user/:username", authenticationMiddleware, async (req: CustomRe
 });
 
 // EDIT USER
-userRouter.patch("/user/:id", authenticationMiddleware, authorizationMiddleware, async (req: CustomRequest, res: Response) => {
+userRouter.patch("/user/:id", authenticationMiddleware, authorizationMiddleware, async (req: Request, res: Response) => {
     try {
         const response = await userService.editUser(Number(req.params.id), req.body);
         if (response) {
@@ -122,7 +118,7 @@ userRouter.patch("/user/:id", authenticationMiddleware, authorizationMiddleware,
     }
 });
 
-userRouter.delete("/user/:id", authenticationMiddleware, authorizationMiddleware, async (req: CustomRequest, res: Response) => {
+userRouter.delete("/user/:id", authenticationMiddleware, authorizationMiddleware, async (req: Request, res: Response) => {
     try {
         const response = await userService.deleteUser(Number(req.params.id));
         if (response) {
@@ -135,7 +131,7 @@ userRouter.delete("/user/:id", authenticationMiddleware, authorizationMiddleware
     }
 });
 
-userRouter.patch("/user/change-password/:id", authenticationMiddleware, authorizationMiddleware, async (req: CustomRequest, res: Response) => {
+userRouter.patch("/user/change-password/:id", authenticationMiddleware, authorizationMiddleware, async (req: Request, res: Response) => {
     try {
         const response = await userAuth.changePassword(Number(req.params.id), req.body as ChangePassword);
         if (response) {
